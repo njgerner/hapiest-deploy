@@ -19,26 +19,28 @@ const folders = {
 
 const chance = new Chance();
 
+var filePath = Path.join(folders.gitRoot, 'someFileDoesntExist.txt');
+
 describe('DeployService', function() {
 
     describe('deploy', function() {
 
         beforeEach(function() {
-            var repository, index, filename;
+            var repository, index, fileName;
 
             // Mock out Git repo
             return Promise.resolve()
                 .then(() => Git.Repository.init(folders.gitRoot, 0))
                 .then(repo => repository = repo)
                 .then(() => {
-                    filename = chance.string({length: 10, pool: 'abcdefghijklmnopqrstuvwxyz'}) + '.txt';
-                    const filePath = Path.resolve(folders.gitRoot,filename);
+                    fileName = chance.string({length: 10, pool: 'abcdefghijklmnopqrstuvwxyz'}) + '.txt';
+                    filePath = Path.resolve(folders.gitRoot,fileName);
                     const contents = chance.string();
                     return Fs.writeFileAsync(filePath, contents);
                 })
                 .then(() => repository.refreshIndex())
                 .then(idx => index = idx)
-                .then(() => index.addByPath(filename))
+                .then(() => index.addByPath(fileName))
                 .then(() => index.write())
                 .then(() => index.writeTree())
                 .then((oid) => {
@@ -64,7 +66,8 @@ describe('DeployService', function() {
                        resolve();
                    }
                })
-            });
+            })
+            .then(() => Fs.unlinkAsync(filePath));
         });
 
         it('Should successfully update AWS EB environment with new application version', function() {
