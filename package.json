@@ -1,12 +1,12 @@
 {
   "name": "hapiest-deploy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A deployment tool.  Initially for AWS ElasticBeanstalk but it may expand in scope over time.",
   "main": "index.js",
   "scripts": {
     "test": "npm run test:unit && npm run test:integration",
-    "test:unit": "node_modules/mocha/bin/mocha /app/src/test/unit --recursive",
-    "test:integration": "node_modules/mocha/bin/mocha /app/src/test/integration --recursive"
+    "test:unit": "node_modules/mocha/bin/mocha test/unit --recursive",
+    "test:integration": "node_modules/mocha/bin/mocha test/integration --recursive"
   },
   "repository": {
     "type": "git",
