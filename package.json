@@ -1,0 +1,42 @@
+{
+  "name": "hapiest-deploy",
+  "version": "0.0.1",
+  "description": "A deployment tool.  Initially for AWS ElasticBeanstalk but it may expand in scope over time.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "node_modules/mocha/bin/mocha /app/src/test/unit --recursive",
+    "test:integration": "node_modules/mocha/bin/mocha /app/src/test/integration --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonathan-fulton/hapiest-deploy.git"
+  },
+  "keywords": [
+    "Hapiest",
+    "deploy",
+    "AWS",
+    "ElasticBeanstalk",
+    "Elastic",
+    "Beanstalk"
+  ],
+  "author": "Jonathan Fulton",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonathan-fulton/hapiest-deploy/issues"
+  },
+  "homepage": "https://github.com/jonathan-fulton/hapiest-deploy#readme",
+  "devDependencies": {
+    "chance": "1.0.3",
+    "hapiest-logger": "0.0.5",
+    "mocha": "2.5.3",
+    "rimraf": "2.5.2",
+    "should": "9.0.2"
+  },
+  "dependencies": {
+    "adm-zip": "0.4.7",
+    "aws-sdk": "2.4.1",
+    "bluebird": "3.4.1",
+    "nodegit": "0.13.2"
+  }
+}

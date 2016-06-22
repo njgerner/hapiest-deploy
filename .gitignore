@@ -1,0 +1,5 @@
+node_modules
+
+test/helper/integration-config/deployConfig.json
+test/helper/integration-config/deployCredentials.json
+test/helper/integration-apps

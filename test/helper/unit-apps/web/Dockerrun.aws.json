@@ -1,0 +1,17 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Authentication": {
+    "Bucket": "vizualai",
+    "Key": "config/dockerhub/dockerhub-vizualai-auth.json"
+  },
+  "Image": {
+    "Name": "vizualai/web",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "HostPort": "80",
+      "ContainerPort": "3000"
+    }
+  ]
+}

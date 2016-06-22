@@ -1,0 +1,19 @@
+{
+  "region": "us-east-1",
+  "s3Bucket": "myBucket",
+  "ebApplications": [{
+    "name": "web",
+    "ebApplicationName": "testapp-web",
+    "ebEnvironments": [{
+      "name": "staging",
+      "ebEnvironmentName": "testabb-web-staging",
+      "ebEnvironmentId": "e-asdf3acjkr",
+      "gitBranch": "master"
+    },{
+      "name": "production",
+      "ebEnvironmentName": "testabb-web-production",
+      "ebEnvironmentId": "e-asdf3acjkr",
+      "gitBranch": "master"
+    }]
+  }]
+}
