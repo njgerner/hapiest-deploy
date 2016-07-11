@@ -5,7 +5,7 @@
     "Key": "config/dockerhub/dockerhub-auth.json"
   },
   "Image": {
-    "Name": "testapp/web",
+    "Name": "testapp/web{{TAG}}",
     "Update": "true"
   },
   "Ports": [

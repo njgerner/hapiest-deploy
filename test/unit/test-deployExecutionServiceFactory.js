@@ -18,7 +18,7 @@ describe('DeployExecutionServiceFactory', function() {
             const info = {
                 region: 'us-east-1',
                 s3Bucket: 'myBucket',
-                appName: 'testapp-web',
+                appName: 'web',
                 ebApplicationName: 'testapp-web',
                 envName: 'staging',
                 ebEnvironmentName: 'testapp-web-staging',
