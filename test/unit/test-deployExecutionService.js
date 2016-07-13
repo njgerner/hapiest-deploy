@@ -85,10 +85,10 @@ describe('DeployExecutionService', function() {
         });
 
         it('Should successfully kick off a new EB deployment', function() {
-            this.timeout(15000);
 
             let zipBuffer;
             const deployExecutionService = DeployExecutionServiceFactory.create(credentials, info, folders, logger);
+            Sinon.stub(deployExecutionService, '_waitForAppVersionToBeAvailable', (s3Info) => Promise.resolve(s3Info));
             Sinon.stub(deployExecutionService._s3, 'putObject', (params, callback) => {
                 zipBuffer = params.Body; // Save off the zipBuffer so we can check the file contents
                 callback(null, {});
@@ -106,8 +106,41 @@ describe('DeployExecutionService', function() {
                     zipEntries.length.should.eql(1);
                     const dockerrunAwsJsonContents = zipEntries[0].getData().toString('utf8');
                     
-                    const matches = dockerrunAwsJsonContents.match(/testapp\/web:[a-z0-9]{32,32}/);
+                    const matches = dockerrunAwsJsonContents.match(/testapp\/web:[a-z0-9]{40,40}/);
                     Should.exist(matches);
+                })
+        });
+
+        it('Should successfully kick off a new EB deployment with a specific commit hash and run the preHookFunction', function() {
+            this.timeout(15000);
+
+            let zipBuffer;
+            const commitHash = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmn';
+            const preHookFunctionStub = Sinon.stub().returns(Promise.resolve());
+            const deployExecutionService = DeployExecutionServiceFactory.create(credentials, info, folders, logger, preHookFunctionStub);
+            Sinon.stub(deployExecutionService, '_waitForAppVersionToBeAvailable', (s3Info) => Promise.resolve(s3Info));
+            Sinon.stub(deployExecutionService._s3, 'putObject', (params, callback) => {
+                zipBuffer = params.Body; // Save off the zipBuffer so we can check the file contents
+                callback(null, {});
+            });
+            Sinon.stub(deployExecutionService._eb, 'createApplicationVersion', (newAppVersion, callback) => {callback(null, {})});
+            Sinon.stub(deployExecutionService._eb, 'updateEnvironment', (environmentUpdate, callback) => {callback(null, {})});
+
+            return deployExecutionService.deploy(commitHash)
+                .then(() => {
+                    Should.exist(zipBuffer);
+                    // Confirm the .zip we upload contains the {{TAG}} replaced
+                    const zip = new AdmZip(zipBuffer);
+                    const zipEntries = zip.getEntries();
+
+                    zipEntries.length.should.eql(1);
+                    const dockerrunAwsJsonContents = zipEntries[0].getData().toString('utf8');
+
+                    const matches = dockerrunAwsJsonContents.match(/testapp\/web:abcdefghijklmnopqrstuvwxyzabcdefghijklmn/);
+                    Should.exist(matches);
+
+                    preHookFunctionStub.calledOnce.should.be.True();
+                    preHookFunctionStub.calledWith(info, commitHash, logger).should.be.True();
                 })
         });
 

@@ -27,6 +27,24 @@ describe('DeployServiceFactory', function() {
            deployService.should.be.an.instanceOf(DeployService);
        });
 
+        it('Should successfully create an instance of DeployService with preHookFunction provided', function() {
+
+            /** @type {DeployCredentials} */
+            const credentials = require('../helper/unit-config/deployCredentials.json');
+            /** @type {DeployConfig} */
+            const config = require('../helper/unit-config/deployConfig.json');
+
+            const folders = {
+                config: Path.resolve(__dirname, '../helper/unit-config'),
+                apps: Path.resolve(__dirname, '../helper/unit-apps'),
+                gitRoot: Path.resolve(__dirname, '../helper/unit-repo')
+            };
+            const preHookFunction = (info, deployRequest, logger) => {  };
+            const deployService = DeployServiceFactory.create(folders, logger, preHookFunction);
+            Should.exist(deployService);
+            deployService.should.be.an.instanceOf(DeployService);
+        });
+
         // @TODO: add test cases for invalid configurations
     
     });

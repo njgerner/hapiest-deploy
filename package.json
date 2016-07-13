@@ -1,6 +1,6 @@
 {
   "name": "hapiest-deploy",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A deployment tool.  Initially for AWS ElasticBeanstalk but it may expand in scope over time.",
   "main": "index.js",
   "scripts": {
@@ -38,6 +38,7 @@
     "adm-zip": "0.4.7",
     "aws-sdk": "2.4.1",
     "bluebird": "3.4.1",
+    "minimist": "1.2.0",
     "nodegit": "0.13.2"
   }
 }
