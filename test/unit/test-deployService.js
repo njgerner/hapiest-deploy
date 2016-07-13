@@ -131,6 +131,34 @@ describe('DeployService', function() {
 
         });
 
+    });
+
+    describe('deploy', function() {
+
+        it('Should work', function() {
+            const service = DeployServiceFactory.create(folders, logger, (info, logger) => {});
+            const deployStub = Sinon.stub().returns(Promise.resolve());
+
+            let ebAppForChecking, ebEnvForChecking, preHookFunctionForChecking;
+            const getExecServiceStub = Sinon.stub(service, '_getDeployExecutionService', (ebApp, ebEnv, preHookFunction) => {
+                ebAppForChecking = ebApp;
+                ebEnvForChecking = ebEnv;
+                preHookFunctionForChecking = preHookFunction;
+                return {
+                    deploy: deployStub
+                }
+            });
+
+            return service.deploy({appName:'web', envName:'staging', commitHash:'ab5e9e3a4959bc91adfa3028b09226e47331504d', runPreHook: true})
+                .then(() => {
+                    deployStub.calledOnce.should.be.True();
+                    getExecServiceStub.calledOnce.should.be.True();
+                    ebAppForChecking.should.be.an.Object();
+                    ebEnvForChecking.should.be.an.Object();
+                    preHookFunctionForChecking.should.be.a.Function();
+                })
+        })
+
     })
 
 });
