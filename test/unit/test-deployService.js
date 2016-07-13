@@ -29,23 +29,23 @@ describe('DeployService', function() {
                 .catch(err => error = err)
                 .then(() => {
                     Should.exist(error);
-                    error.message.should.eql(`Invalid argv - expecting three arguments ['node', '/path/to/binFile.js', '{appName}:{envName}']`);
+                    error.message.should.eql(`Invalid argv - expecting three or four arguments ['node', '/path/to/binFile.js', '{appName}:{envName}', '{commitHash} (optional)']`);
                     deployStub.callCount.should.eql(0);
                 })
 
         });
 
-        it('Should throw an error because argv.length > 3', function() {
+        it('Should throw an error because argv.length > 4', function() {
             const service = DeployServiceFactory.create(folders, logger);
             const deployStub = Sinon.stub(service, 'deploy', (appName, envName) => new Promise(resolve => resolve()));
 
-            const argv = ['node', 'someFile.js', 'myapp:production', 'anotherarg'];
+            const argv = ['node', 'someFile.js', 'myapp:production', 'anotherarg', 'andanother'];
             var error;
             return service.deployFromCommandLineArguments(argv)
                 .catch(err => error = err)
                 .then(() => {
                     Should.exist(error);
-                    error.message.should.eql(`Invalid argv - expecting three arguments ['node', '/path/to/binFile.js', '{appName}:{envName}']`);
+                    error.message.should.eql(`Invalid argv - expecting three or four arguments ['node', '/path/to/binFile.js', '{appName}:{envName}', '{commitHash} (optional)']`);
                     deployStub.callCount.should.eql(0);
                 })
 
@@ -99,6 +99,22 @@ describe('DeployService', function() {
 
         });
 
+        it('Should throw an error because four element is not a valid git commit hash', function() {
+            const service = DeployServiceFactory.create(folders, logger);
+            const deployStub = Sinon.stub(service, 'deploy', (appName, envName) => new Promise(resolve => resolve()));
+
+            const argv = ['node', 'someFile.js', 'myapp:production', 'invalidhash'];
+            var error;
+            return service.deployFromCommandLineArguments(argv)
+                .catch(err => error = err)
+                .then(() => {
+                    Should.exist(error);
+                    error.message.should.eql(`Invalid argument invalidhash - Must be a valid, full-length git commit hash`);
+                    deployStub.callCount.should.eql(0);
+                })
+
+        });
+
         it('Should successfully deploy with correct appName = myapp and envName = production', function() {
             const service = DeployServiceFactory.create(folders, logger);
             const deployStub = Sinon.stub(service, 'deploy', (appName, envName) => new Promise(resolve => resolve()));
@@ -110,7 +126,23 @@ describe('DeployService', function() {
                 .then(() => {
                     Should.not.exist(error);
                     deployStub.callCount.should.eql(1);
-                    deployStub.calledWith('myapp', 'production').should.be.True();
+                    deployStub.calledWith({appName:'myapp', envName:'production'}).should.be.True();
+                })
+
+        });
+
+        it('Should successfully deploy with correct appName = myapp, envName = production, and commitHash = ab5e9e3a4959bc91adfa3028b09226e47331504d', function() {
+            const service = DeployServiceFactory.create(folders, logger);
+            const deployStub = Sinon.stub(service, 'deploy', (appName, envName) => new Promise(resolve => resolve()));
+
+            const argv = ['node', 'someFile.js', 'myapp:production', 'ab5e9e3a4959bc91adfa3028b09226e47331504d'];
+            var error;
+            return service.deployFromCommandLineArguments(argv)
+                .catch(err => error = err)
+                .then(() => {
+                    Should.not.exist(error);
+                    deployStub.callCount.should.eql(1);
+                    deployStub.calledWith({appName:'myapp', envName:'production', commitHash:'ab5e9e3a4959bc91adfa3028b09226e47331504d'}).should.be.True();
                 })
 
         });
