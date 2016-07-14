@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const Should = require('should');
+const _ = require('lodash');
 const Path = require('path');
 const Fs = Promise.promisifyAll(require('fs'));
 const Sinon = require('sinon');
@@ -111,13 +112,13 @@ describe('DeployExecutionService', function() {
                 })
         });
 
-        it('Should successfully kick off a new EB deployment with a specific commit hash and run the preHookFunction', function() {
+        it('Should successfully kick off a new EB deployment with a specific commit hash', function() {
             this.timeout(15000);
 
             let zipBuffer;
-            const commitHash = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmn';
-            const preHookFunctionStub = Sinon.stub().returns(Promise.resolve());
-            const deployExecutionService = DeployExecutionServiceFactory.create(credentials, info, folders, logger, preHookFunctionStub);
+            const updatedInfo = _.clone(info);
+            updatedInfo.commitHash = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmn';
+            const deployExecutionService = DeployExecutionServiceFactory.create(credentials, updatedInfo, folders, logger);
             Sinon.stub(deployExecutionService, '_waitForAppVersionToBeAvailable', (s3Info) => Promise.resolve(s3Info));
             Sinon.stub(deployExecutionService._s3, 'putObject', (params, callback) => {
                 zipBuffer = params.Body; // Save off the zipBuffer so we can check the file contents
@@ -126,7 +127,7 @@ describe('DeployExecutionService', function() {
             Sinon.stub(deployExecutionService._eb, 'createApplicationVersion', (newAppVersion, callback) => {callback(null, {})});
             Sinon.stub(deployExecutionService._eb, 'updateEnvironment', (environmentUpdate, callback) => {callback(null, {})});
 
-            return deployExecutionService.deploy(commitHash)
+            return deployExecutionService.deploy()
                 .then(() => {
                     Should.exist(zipBuffer);
                     // Confirm the .zip we upload contains the {{TAG}} replaced
@@ -138,9 +139,6 @@ describe('DeployExecutionService', function() {
 
                     const matches = dockerrunAwsJsonContents.match(/testapp\/web:abcdefghijklmnopqrstuvwxyzabcdefghijklmn/);
                     Should.exist(matches);
-
-                    preHookFunctionStub.calledOnce.should.be.True();
-                    preHookFunctionStub.calledWith(info, commitHash, logger).should.be.True();
                 })
         });
 
