@@ -195,6 +195,30 @@ describe('DeployService', function() {
                     Should.not.exist(error);
                     preHookStub.calledOnce.should.be.True();
 
+                    const expectedInfo = [{
+                            "region": "us-east-1",
+                            "s3Bucket": "myBucket",
+                            "appName": "web",
+                            "ebApplicationName": "testapp-web",
+                            "envName": "staging",
+                            "ebEnvironmentName": "testabb-web-staging",
+                            "ebEnvironmentId": "e-asdf3acjkr",
+                            "gitBranch": "master",
+                            "commitHash": "ab5e9e3a4959bc91adfa3028b09226e47331504d"
+                        },{
+                            "region": "us-east-1",
+                            "s3Bucket": "myBucket",
+                            "appName": "web-with-tag",
+                            "ebApplicationName": "testapp-web",
+                            "envName": "staging",
+                            "ebEnvironmentName": "testabb-web-staging",
+                            "ebEnvironmentId": "e-asdf3acjkr",
+                            "gitBranch": "master",
+                            "commitHash": "ab5e9e3a4959bc91adfa3028b09226e47331504d"
+                        }];
+                    const expectCommitHash = 'ab5e9e3a4959bc91adfa3028b09226e47331504d';
+                    preHookStub.calledWithExactly(expectedInfo, expectCommitHash, logger).should.be.True();
+
                     deployExecServices.length.should.eql(2);
                     deployExecServices[0].deploy.calledOnce.should.be.True();
                     deployExecServices[1].deploy.calledOnce.should.be.True();
