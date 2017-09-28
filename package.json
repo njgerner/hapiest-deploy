@@ -39,6 +39,6 @@
     "aws-sdk": "2.4.1",
     "bluebird": "3.4.1",
     "minimist": "1.2.0",
-    "nodegit": "0.13.2"
+    "nodegit": "0.20.2"
   }
 }
